@@ -13,7 +13,12 @@ Page({
       "pop": { page: 0, list: []},
       "new": { page: 0, list: [] },
       "sell": { page: 0, list: [] }
-    }
+    },
+    arr: ["pop", "new", "sell"],
+    currentType: "pop",
+    showBackTop: false,
+    isTabFixed: false,
+    tabControlTop: 0
   },
 
   /**
@@ -25,6 +30,7 @@ Page({
     this._getGoodsData("new");
     this._getGoodsData("sell");
 
+    
   },
 
 // -------------------网络请求函数---------------------
@@ -67,7 +73,38 @@ Page({
     // console.log(even)
     const index = even.detail.index;
     console.log(index);
+    this.setData({
+      currentType: this.data.arr[index]
+    })
+  },
+
+  onReachBottom(){
+    this._getGoodsData(this.data.currentType);
+  },
+
+  handleImageLoad() {
+    wx.createSelectorQuery().select('#tab-control').boundingClientRect((rect) => {
+      this.setData({
+        tabControlTop: rect.top
+      })
+    }).exec()
+  },
+
+//滚动页面
+  onPageScroll(e) {
+    // 1.获取滚动的顶部
+    const position = e.scrollTop;
+    const flag = position >= 1000
+    if(flag != this.data.showBackTop){
+      this.setData({
+        showBackTop: position >= 1000,
+      })
+    }
+    const flag2 = position >=this.data.tabControlTop;
+    if(flag2 != this.data.isTabFixed) {
+      this.setData({
+        isTabFixed: flag2
+      })
+    }
   }
-
-
-})
+  })
